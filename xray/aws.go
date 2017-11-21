@@ -22,7 +22,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws/client"
 	"github.com/aws/aws-sdk-go/aws/request"
-	"github.com/aws/aws-xray-sdk-go/resources"
+	"github.com/quorumcontrol/aws-xray-sdk-go/resources"
 	log "github.com/cihub/seelog"
 )
 

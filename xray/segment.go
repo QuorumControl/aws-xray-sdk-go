@@ -15,8 +15,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/aws/aws-xray-sdk-go/header"
-	"github.com/aws/aws-xray-sdk-go/internal/plugins"
+	"github.com/quorumcontrol/aws-xray-sdk-go/header"
+	"github.com/quorumcontrol/aws-xray-sdk-go/internal/plugins"
 	log "github.com/cihub/seelog"
 )
 

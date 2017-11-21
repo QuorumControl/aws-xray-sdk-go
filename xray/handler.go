@@ -15,8 +15,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/aws/aws-xray-sdk-go/header"
-	"github.com/aws/aws-xray-sdk-go/pattern"
+	"github.com/quorumcontrol/aws-xray-sdk-go/header"
+	"github.com/quorumcontrol/aws-xray-sdk-go/pattern"
 	log "github.com/cihub/seelog"
 )
 

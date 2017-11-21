@@ -12,7 +12,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 
-	"github.com/aws/aws-xray-sdk-go/internal/plugins"
+	"github.com/quorumcontrol/aws-xray-sdk-go/internal/plugins"
 	log "github.com/cihub/seelog"
 )
 
