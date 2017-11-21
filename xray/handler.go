@@ -87,7 +87,14 @@ func Handler(sn SegmentNamer, h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		name := sn.Name(r.Host)
 
-		traceHeader := header.FromString(r.Header.Get("x-amzn-trace-id"))
+		headerString := r.Header.Get("x-amzn-trace-id")
+		if headerString == "" {
+			if envStr := os.Getenv("_X_AMZN_TRACE_ID"); envStr != "" {
+				headerString = envStr
+			}
+		}
+
+		traceHeader := header.FromString(headerString)
 
 		ctx, seg := NewSegmentFromHeader(r.Context(), name, traceHeader)
 

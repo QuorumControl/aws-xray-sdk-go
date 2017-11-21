@@ -11,6 +11,8 @@ package xray
 import (
 	"context"
 	"errors"
+	"os"
+	"github.com/quorumcontrol/aws-xray-sdk-go/header"
 )
 
 // ContextKeytype defines integer to be type of ContextKey.
@@ -27,6 +29,13 @@ var ErrRetrieveSegment = errors.New("unable to retrieve segment")
 func GetSegment(ctx context.Context) *Segment {
 	if seg, ok := ctx.Value(ContextKey).(*Segment); ok {
 		return seg
+	} else {
+		traceEnv := os.Getenv("_X_AMZN_TRACE_ID")
+		if traceEnv != "" {
+			h := header.FromString(traceEnv)
+			_, seg := NewSegmentFromHeader(ctx, "lambda", h)
+			return seg
+		}
 	}
 	return nil
 }
