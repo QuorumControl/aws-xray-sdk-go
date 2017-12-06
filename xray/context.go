@@ -11,8 +11,7 @@ package xray
 import (
 	"context"
 	"errors"
-	"os"
-	"github.com/quorumcontrol/aws-xray-sdk-go/header"
+	"sync"
 )
 
 // ContextKeytype defines integer to be type of ContextKey.
@@ -24,17 +23,29 @@ var ContextKey = new(ContextKeytype)
 // ErrRetrieveSegment happens when a segment cannot be retrieved
 var ErrRetrieveSegment = errors.New("unable to retrieve segment")
 
+var currentSegment *Segment
+var segmentCacheLock = &sync.Mutex{}
+
+func ClearSegmentCache() {
+	segmentCacheLock.Lock()
+	defer segmentCacheLock.Unlock()
+	currentSegment = nil
+}
+
+func SetCurrentSegment(seg *Segment) {
+	segmentCacheLock.Lock()
+	defer segmentCacheLock.Unlock()
+	currentSegment = seg
+}
+
 // GetSegment returns a pointer to the segment or subsegment provided
 // in ctx, or nil if no segment or subsegment is found.
 func GetSegment(ctx context.Context) *Segment {
 	if seg, ok := ctx.Value(ContextKey).(*Segment); ok {
 		return seg
 	} else {
-		traceEnv := os.Getenv("_X_AMZN_TRACE_ID")
-		if traceEnv != "" {
-			h := header.FromString(traceEnv)
-			_, seg := NewSegmentFromHeader(ctx, "lambda", h)
-			return seg
+		if currentSegment != nil {
+			return currentSegment
 		}
 	}
 	return nil

@@ -87,16 +87,18 @@ func Handler(sn SegmentNamer, h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		name := sn.Name(r.Host)
 
+
 		headerString := r.Header.Get("x-amzn-trace-id")
-		if headerString == "" {
-			if envStr := os.Getenv("_X_AMZN_TRACE_ID"); envStr != "" {
-				headerString = envStr
-			}
+		envString := os.Getenv("_X_AMZN_TRACE_ID")
+		if len(envString) > len(headerString) {
+			headerString = envString
 		}
+		log.Tracef("trace header: %s : env header: %s", headerString, envString)
 
 		traceHeader := header.FromString(headerString)
 
 		ctx, seg := NewSegmentFromHeader(r.Context(), name, traceHeader)
+		SetCurrentSegment(seg)
 
 		r = r.WithContext(ctx)
 
@@ -191,9 +193,8 @@ func btoi(b bool) int {
 	return 0
 }
 
-func parseHeaders(h http.Header) map[string]string {
+func parseHeaderString(s string) map[string]string {
 	m := map[string]string{}
-	s := h.Get("x-amzn-trace-id")
 	for _, c := range strings.Split(s, ";") {
 		p := strings.SplitN(c, "=", 2)
 		k := strings.TrimSpace(p[0])
@@ -204,4 +205,8 @@ func parseHeaders(h http.Header) map[string]string {
 		m[k] = v
 	}
 	return m
+}
+
+func parseHeaders(h http.Header) map[string]string {
+	return parseHeaderString(h.Get("x-amzn-trace-id"))
 }
