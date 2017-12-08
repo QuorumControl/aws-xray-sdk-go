@@ -109,7 +109,7 @@ func Handler(sn SegmentNamer, h http.Handler) http.Handler {
 		seg.GetHTTP().GetRequest().ClientIP, seg.GetHTTP().GetRequest().XForwardedFor = clientIP(r)
 		seg.GetHTTP().GetRequest().UserAgent = r.UserAgent()
 
-		trace := parseHeaders(r.Header)
+		trace := parseHeaderString(headerString)
 		if trace["Root"] != "" {
 			seg.TraceID = trace["Root"]
 			seg.RequestWasTraced = true
@@ -157,6 +157,7 @@ func Handler(sn SegmentNamer, h http.Handler) http.Handler {
 			seg.Fault = true
 		}
 		seg.Unlock()
+		ClearSegmentCache()
 		seg.Close(nil)
 	})
 }
